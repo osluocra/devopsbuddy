@@ -8,6 +8,9 @@ import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
 import com.devopsbuddy.backend.persistence.repositories.PlanRepository;
 import com.devopsbuddy.backend.persistence.repositories.RoleRepository;
 import com.devopsbuddy.backend.persistence.repositories.UserRepository;
+import com.devopsbuddy.enums.PlansEnum;
+import com.devopsbuddy.enums.RolesEnum;
+import com.devopsbuddy.utils.UsersUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +30,8 @@ import java.util.Set;
 
 public class RepositoriesIntegrationTest {
 
-    private static final int BASIC_PLAN_ID = 1;
-    private static final int BASIC_ROLE_ID = 1;
+    //private static final int BASIC_PLAN_ID = 1;
+    //private static final int BASIC_ROLE_ID = 1;
 
 
     @Autowired
@@ -49,65 +52,52 @@ public class RepositoriesIntegrationTest {
 
     }
 
+
+    @Test
+    public void testCreateNewRole() throws Exception{
+        Role userRole =  createNewRole(RolesEnum.BASIC);
+        roleRepository.save(userRole);
+
+        Role retrieveRole = roleRepository.findOne(RolesEnum.BASIC.getId());
+        Assert.assertNotNull(retrieveRole);
+    }
+
     @Test
     public void testCreateNewPlan() throws Exception{
-        Plan basicPlan = createBasicPlan();
+        Plan basicPlan = createNewPlan(PlansEnum.BASIC);
         planRepository.save(basicPlan);
 
-       Plan retrievePlan = planRepository.findOne(BASIC_PLAN_ID);
+       Plan retrievePlan = planRepository.findOne(PlansEnum.BASIC.getId());
 
         Assert.assertNotNull(retrievePlan);
 
     }
 
 
-    private Plan createBasicPlan(){
-        Plan plan = new Plan();
-        plan.setId(BASIC_PLAN_ID);
-        plan.setName("Basic");
-        return plan;
-    }
-
-    private Role createBasicRole(){
-        Role role = new Role();
-        role.setId(BASIC_ROLE_ID);
-        role.setName("ROLE_USER");
-        return role;
-
+    private Plan createNewPlan(PlansEnum plansEnum){
+        return  new Plan(PlansEnum.BASIC);
 
     }
 
-    private User createBasicUser(){
-        User user = new User();
-        user.setUsername("basicUser");
-        user.setPassword("secret");
-        user.setEmail("me@example.com");
-        user.setFirstName("firstName");
-        user.setLastName("lastName");
-        user.setPhoneNumber("12456789123");
-        user.setCountry("GB");
-        user.setEnabled(true);
-        user.setDescription("A basic user");
-        user.setProfileImageUrl("https://blah.blash.images.com/basicuser");
-        return user;
+    private Role createNewRole(RolesEnum rolesEnum){
+        return new Role(RolesEnum.BASIC);
 
     }
+
+
 
     @Test
     public void createNewUser() throws Exception{
-        Plan basicPlan = createBasicPlan();
+        Plan basicPlan = createNewPlan(PlansEnum.BASIC);
         planRepository.save(basicPlan);
 
-        User basicUser = createBasicUser();
+        User basicUser = UsersUtils.createBasicUser();
         basicUser.setPlan(basicPlan);
 
-        Role basicRole = createBasicRole();
+        Role basicRole = createNewRole(RolesEnum.BASIC);
         Set<UserRole> userRoles = new HashSet<>();
 
-        UserRole userRole = new UserRole();
-        userRole.setUser(basicUser);
-        userRole.setRole(basicRole);
-
+        UserRole userRole = new UserRole(basicUser, basicRole);
         userRoles.add(userRole);
 
         basicUser.getUserRoles().addAll(userRoles);
