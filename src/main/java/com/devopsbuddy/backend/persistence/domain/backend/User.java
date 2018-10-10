@@ -27,7 +27,9 @@ public class User implements Serializable, UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(unique=true)
     private String username;
+
     private String password;
     private String email;
 
@@ -53,7 +55,7 @@ public class User implements Serializable, UserDetails {
 
     private boolean enabled;
 
-    @ManyToOne(fetch= FetchType.LAZY)
+    @ManyToOne(fetch= FetchType.EAGER)
     @JoinColumn(name="plan_id")
     private Plan plan;
 
@@ -162,7 +164,7 @@ public class User implements Serializable, UserDetails {
         this.email = email;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> userRoles = new HashSet<>();
 
 
@@ -190,7 +192,11 @@ public class User implements Serializable, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        userRoles.forEach(ur -> authorities.add(new Authority(ur.getRole().getName())));
+        return authorities;
+
     }
 
     @Override

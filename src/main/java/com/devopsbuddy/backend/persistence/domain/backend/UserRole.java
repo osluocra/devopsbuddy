@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
+@Table(name="user_role")
 public class UserRole implements Serializable {
     /** The serial version UID for Seriazable Classes **/
 
@@ -14,12 +15,12 @@ public class UserRole implements Serializable {
 
     }
 
-    @Id
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private User user;
 
-
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
@@ -63,6 +64,8 @@ public class UserRole implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+
+
+        return (int)(id ^ (id>>>32));
     }
 }

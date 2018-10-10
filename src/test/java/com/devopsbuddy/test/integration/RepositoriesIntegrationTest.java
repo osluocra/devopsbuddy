@@ -117,54 +117,30 @@ public class RepositoriesIntegrationTest {
 
     @Test
     public void createNewUser() throws Exception {
-        Plan basicPlan = createNewPlan(PlansEnum.BASIC);
 
-        try {
-            planRepository.save(basicPlan);
+        User basicUser = createUser();
 
-            User basicUser = createUser();//UserUtils.createBasicUser();
+        User newlyCreatedUser = userRepository.findOne(basicUser.getId());
+        Assert.assertNotNull(newlyCreatedUser);
+        Assert.assertTrue(newlyCreatedUser.getId() != 0);
+        Assert.assertNotNull(newlyCreatedUser.getPlan());
+        Assert.assertNotNull(newlyCreatedUser.getPlan().getId());
+        Set<UserRole> newlyCreatedUserRoles = newlyCreatedUser.getUserRoles();
 
-            //basicUser.setPlan(basicPlan);
-
-            Role basicRole = createNewRole(RolesEnum.BASIC);
-            Set<UserRole> userRoles = new HashSet<>();
-
-            UserRole userRole = new UserRole(basicUser, basicRole);
-            userRoles.add(userRole);
-
-            basicUser.getUserRoles().addAll(userRoles);
-
-            //for (UserRole ur : userRoles) {
-            //    System.out.println(ur.getRole());
-            //    roleRepository.save(ur.getRole());
-            //}
-
-            //basicUser = userRepository.save(basicUser);
-
-            User newlyCreatedUser = userRepository.findOne(basicUser.getId());
-
-            Assert.assertNotNull(newlyCreatedUser);
-            Assert.assertTrue(newlyCreatedUser.getId() != 0);
-            Assert.assertNotNull(newlyCreatedUser.getPlan());
-            Assert.assertNotNull(newlyCreatedUser.getPlan().getId());
-            Set<UserRole> newlyCreatedUserRoles = newlyCreatedUser.getUserRoles();
-
-            for (UserRole ur : newlyCreatedUserRoles) {
-                Assert.assertNotNull(ur.getRole());
-                Assert.assertNotNull(ur.getRole().getId());
-            }
-
-        } catch (Exception e2) {
-            e2.printStackTrace();
-            throw new Exception(e2);
+        for (UserRole ur : newlyCreatedUserRoles) {
+            Assert.assertNotNull(ur.getRole());
+            Assert.assertNotNull(ur.getRole().getId());
         }
 
 
     }
 
     @Test
-    public void deleteUser() throws Exception {
-
+    public void deleteUser() throws Exception{
+        User basicUser = createUser();
+        userRepository.delete(basicUser.getId());
     }
+
+
 
 }

@@ -1,5 +1,6 @@
 package com.devopsbuddy.config;
 
+import com.devopsbuddy.backend.service.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -22,6 +23,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private UserSecurityService userSecurityService;
 
     private static final String[] PUBLIC_MATCHES = {
             "/webjars/**",
@@ -63,9 +66,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
         auth
-                .inMemoryAuthentication()
-                .withUser("user").password("{noop}password")
-                .roles("USER");
+                .userDetailsService(userSecurityService);
+
+//                .inMemoryAuthentication()
+//                .withUser("user").password("{noop}password")
+//                .roles("USER");
 
     }
 }
